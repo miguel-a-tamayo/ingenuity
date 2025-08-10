@@ -2,7 +2,7 @@
 Author: Miguel Tamayo
 
 states.py
-Defines the vehicle states for position and orientation. Position vector is in NED coordinates
+Defines the vehicle states for position and orientation. Defined in NED frame
 """
 
 class VehicleStates:
