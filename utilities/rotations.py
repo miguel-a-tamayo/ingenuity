@@ -9,7 +9,7 @@ implements various matric rotations such as Euler->DCM
 
 import numpy as np
 
-def euler2Quat(yaw: float, pitch: float, roll: float) -> list:
+def euler2Quat(yaw: float, pitch: float, roll: float) -> np.array:
     """
     Create quaternion from Euler angles. Angles correspond to the [3, 2, 1] Euler set.
     Euler angles describe the rotation of the vehicle relative to the inertial frame.
@@ -38,12 +38,12 @@ def euler2Quat(yaw: float, pitch: float, roll: float) -> list:
                      0,
                      0]
     
-    quat1 = quatMult(roll_rotation, pitch_rotation)
-    quat = quatMult(quat1, yaw_rotation)
+    quat1 = quatMult(yaw_rotation, pitch_rotation)
+    quat = quatMult(quat1, roll_rotation)
     
     return quat
 
-def quatMult(q1: list, q2: list) -> list:
+def quatMult(q1: np.array, q2: np.array) -> np.array:
     """
     multiplies 2 quaternions
 
@@ -62,24 +62,38 @@ def quatMult(q1: list, q2: list) -> list:
     y = a1*c2 - b1*d2 + c1*a2 + d1*b2
     z = a1*d2 + b1*c2 - c1*b2 + d1*a2
 
-    quat = [w, x, y, z]
+    quat = np.array([w, x, y, z])
 
     return quat
 
-def quatConjugate(q: list) -> list:
+def quatConjugate(q: np.array) -> np.array:
     """
-    caluculates the conjugate of a quaternion
+    calculates the conjugate of a quaternion
 
     :param q: input quaternion
 
     :return qc: quaternion conjugate
     """
 
-    qc = [q[0], -q[1], -q[2], -q[3]]
+    qc = np.array([q[0], -q[1], -q[2], -q[3]])
 
     return qc
 
-def ned2enu(points: list) -> list:
+def quatNormalize(q: np.array) -> np.array:
+    """
+    Normalize a quaternion
+    
+    :param q: input quaternion
+
+    :return qn: normalized quaternion
+    """
+    norm = np.linalg.norm(q)
+
+    if norm == 0:
+        raise ValueError("Cannot normalize a zero quaternion")
+    return q / norm
+
+def ned2enu(points: np.array) -> np.array:
     """
     changes the coordinates from North-East-Down (NED) to East-North-Up (ENU)
     this is required because the graphics functions use ENU frame

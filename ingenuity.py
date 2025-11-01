@@ -7,7 +7,7 @@ import PyQt6.QtWidgets as QtWidgets
 from display.ingenuityDisplay import VehicleDisplay
 from display.plotter import Plotter
 from display.slider import Slider
-from model.states import VehicleStates
+from model.states import VehicleState
 
 class IngenuityWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -36,7 +36,7 @@ class IngenuityWindow(QtWidgets.QMainWindow):
 
         ### --- vehicle widget --- ###
         self.vehicleWidget = VehicleDisplay()
-        self.vehicleState = VehicleStates()
+        self.vehicleState = VehicleState()
 
         ### --- control sliders --- ###
         controlSlidersWidget = QtWidgets.QWidget()

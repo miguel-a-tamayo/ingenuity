@@ -2,7 +2,7 @@ defaultZoom = 10
 defaultAzimuth = 45
 defaultElevation = 30
 
-metersToPixel = 3
+metersToPixel = 1.5
 
 window_height = 700
 window_width = 1200
