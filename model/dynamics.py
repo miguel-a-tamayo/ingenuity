@@ -6,10 +6,8 @@ Date:   10/28/2025
 import numpy as np
 
 from constants.ingenuityConstants import mass
-from model.inputs import Force, Moment
-from utilities.rotations import quatConjugate, quatMult, quatNormalize
+from model.inputs import Force
 from model.states import VehicleState
-
 
 class VehicleDynamics:
     """
@@ -58,6 +56,7 @@ class VehicleDynamics:
     def setVehicleDerivative(self, derivativeState: VehicleState) -> None:
         """
         setVehicleDerivative(derivativeState: VehicleState)
+
         Sets the current vehicle derivative state to the input state
 
         :param derivativeState: new vehicle derivative state
@@ -66,27 +65,42 @@ class VehicleDynamics:
     
     def reset(self) -> None:
         """
-        reset() 
-        Sets both current stae and derivative states to zero
-        """
-        self.state = self.setVehicleState(VehicleState())
+        reset()
 
-    def calculateDerivative(self, state: VehicleState, forces: Force) -> np.array:
+        Sets both current state and derivative states to zero
         """
-        calcualteDerivative(state: VehicleState, forces: Force, moments: Moment)
-        Calculates vehicle state derivative given the current state and input forces and moments
+        self.setVehicleState(VehicleState())
+        self.setVehicleDerivative(VehicleState())
 
-        :param state: current state
-        :param forces: sum of all forces acting on the vehicle [N] in the body frame
-        :param moments: sum of all moments acting on the vehicle [N-m] about the body
+    def update(self, forces: Force) -> None:
+        """
+        update()
+
+        Function that implements the intergration such that the state is updated using the forces
+
+        :param forces: sum of forces acting on the vehicle [N] in the body frame
+        """
+
+        tSpan = np.array([0, self.dt])
+
+
+    def calculateDerivative(self, t: float, stateVector: np.array, force: Force) -> np.array:
+        """
+        calcualteDerivative(stateVector: np.array, force: Force, moments: Moment)
+
+        Calculates vehicle state derivative given the current state and input force and moments
+
+        :param t: current tiem step t
+        :param stateVector: current state in a vector form
+        :param force: sum of all forces acting on the vehicle [N] in the body frame
 
         :return stateDot: vehicle state derivative
         """
 
         # inertial velocity (pdot)
-        vel_inertial = np.array([state.u, state.v, state.w])
+        pos_inertial = stateVector[3:6]
 
         # acceleration (vdot)
-        accel_body = (1.0 / mass) * forces.vector()
+        vel_body = (1.0 / mass) * force.vector()
     
-        return np.array([*vel_inertial, *accel_body])
+        return np.array([*pos_inertial, *vel_body])

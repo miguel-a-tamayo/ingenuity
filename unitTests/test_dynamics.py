@@ -28,6 +28,21 @@ def test_getDerivativeState():
     testVehicle.setVehicleDerivative(inputState)
     assert testVehicle.getVehicleDerivative() == inputState
 
+def test_resetDynamics():
+    # reset the different
+    inputState = VehicleState(1, 2, 3, 0, 0.5, 1.2)
+    emptyState = VehicleState()
+    testVehicle = VehicleDynamics()
+
+    testVehicle.setVehicleState(state=inputState)
+    testVehicle.setVehicleDerivative(derivativeState=inputState)
+    assert testVehicle.getVehicleState() == inputState
+    assert testVehicle.getVehicleDerivative() == inputState
+
+    testVehicle.reset()
+    assert testVehicle.getVehicleState() == emptyState
+    assert testVehicle.getVehicleDerivative() == VehicleState()
+
 def test_derivative():
     # calculate the derivative of a vehicle
     vehicle = VehicleDynamics()
@@ -41,3 +56,7 @@ def test_derivative():
 
     expected = np.array([10.0, 15.0, 0.0]) / mass
     assert np.allclose(dot[3:6], expected, atol=1e-8)
+
+def test_rk4FirstOrder():
+    # compare the analytical vs numerical solution or a first order system
+    vehicle = VehicleDynamics()

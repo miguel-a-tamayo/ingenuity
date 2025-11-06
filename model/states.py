@@ -37,7 +37,7 @@ class VehicleState:
         self.v = v
         self.w = w
     
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if isinstance(other, type(self)):
             if not all([np.allclose(getattr(self, attribute), getattr(other, attribute), atol=1e-8)
                         for attribute in ['pn', 'pe', 'pd', 'u', 'v', 'w']]):
@@ -47,5 +47,28 @@ class VehicleState:
         
         else:
             raise ValueError(f"Other is not type {type(self)}")
+    
+    def asVector(self) -> np.array:
+        """
+        asVector()
 
+        Returns the vector representation of this state
+        """
 
+        return np.array([self.pn, self.pe, self.pd, self.u, self.v, self.w])
+    
+    def fromVector(self, stateVector: np.array) -> None:
+        """
+        fromVector(stateVector: np.array)
+
+        modifies the state instance with the input vector 
+
+        :param stateVector: numpy array representing the state vector
+        """
+        self.pn = stateVector[0]
+        self.pe = stateVector[1]
+        self.pd = stateVector[2]
+
+        self.u = stateVector[0]
+        self.v = stateVector[1]
+        self.w = stateVector[2]
