@@ -8,6 +8,8 @@ import numpy as np
 from constants.ingenuityConstants import mass
 from model.inputs import Force
 from model.states import VehicleState
+from utilities.integrator import integrateRk4
+from utilities.rotations import quatConjugate, quatMult
 
 class VehicleDynamics:
     """
@@ -81,14 +83,14 @@ class VehicleDynamics:
         :param forces: sum of forces acting on the vehicle [N] in the body frame
         """
 
-        tSpan = np.array([0, self.dt])
+        self.state = integrateRk4(self.calculateDerivative, self.state, 0.0, self.dt, forces)
 
 
     def calculateDerivative(self, t: float, stateVector: np.array, force: Force) -> np.array:
         """
-        calcualteDerivative(stateVector: np.array, force: Force, moments: Moment)
+        calcualteDerivative(stateVector: np.array, force: Force)
 
-        Calculates vehicle state derivative given the current state and input force and moments
+        Calculates vehicle state derivative given the current state and input forces
 
         :param t: current tiem step t
         :param stateVector: current state in a vector form
@@ -98,9 +100,18 @@ class VehicleDynamics:
         """
 
         # inertial velocity (pdot)
-        pos_inertial = stateVector[3:6]
+        body2Inertial = stateVector[6:10]
+        inertial2Body = quatConjugate(body2Inertial)
+        pdotInertial = quatMult(quatMult(body2Inertial, stateVector[3:6]), inertial2Body)
 
         # acceleration (vdot)
-        vel_body = (1.0 / mass) * force.vector()
-    
-        return np.array([*pos_inertial, *vel_body])
+        vdotBody = (1.0 / mass) * force.vector()
+
+        # quaternion (qdot)
+        # NOTE: because we don't have rotational dynamics at the moment, the quaternion doesn't
+        # need to be integrated
+        qDot = np.array([0, 0, 0, 0])
+
+        newDerivative = np.array([*pdotInertial, *vdotBody, *qDot])
+
+        return np.array([*pdotInertial, *vdotBody, *qDot])

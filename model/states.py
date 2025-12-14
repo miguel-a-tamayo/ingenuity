@@ -25,7 +25,11 @@ class VehicleState:
                  pd: float = 0.0,
                  u: float = 0.0,
                  v: float = 0.0,
-                 w: float = 0.0):
+                 w: float = 0.0,
+                 qs: float = 1.0,
+                 qx: float = 0.0,
+                 qy: float = 0.0,
+                 qz: float = 0.0):
 
         # position 
         self.pn = pn
@@ -36,6 +40,13 @@ class VehicleState:
         self.u = u
         self.v = v
         self.w = w
+
+        # Quaternion
+        # (Describes rotation from body to inertial. aka how the body rotates relative to inertial frame)
+        self.qs = qs
+        self.qx = qx
+        self.qy = qy
+        self.qz = qz
     
     def __eq__(self, other) -> bool:
         if isinstance(other, type(self)):
