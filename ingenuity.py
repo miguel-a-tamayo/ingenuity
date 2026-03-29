@@ -42,6 +42,10 @@ class IngenuityWindow(QtWidgets.QMainWindow):
         controlSlidersWidget = QtWidgets.QWidget()
         controlSlidersLayout = QtWidgets.QGridLayout()
 
+        self.fxSlider = Slider(label="Fx", minVal=-10, maxVal=10, initVal=0, orientation=1);
+        self.fySlider = Slider(label="Fy", minVal=-10, maxVal=10, initVal=0, orientation=1);
+        self.fzSlider = Slider(label="Fz", minVal=-10, maxVal=10, initVal=0, orientation=1);
+
         self.pnSlider = Slider(label="pn", minVal=-10, maxVal=10, initVal=0, orientation=1); self.pnSlider.valueChangedSignal.connect(self.updateSim)
         self.peSlider = Slider(label="pe", minVal=-10, maxVal=10, initVal=0, orientation=1); self.peSlider.valueChangedSignal.connect(self.updateSim)
         self.pdSlider = Slider(label="pd", minVal=-10, maxVal=10, initVal=0, orientation=1); self.pdSlider.valueChangedSignal.connect(self.updateSim)
@@ -52,6 +56,11 @@ class IngenuityWindow(QtWidgets.QMainWindow):
 
         controlSlidersLayout.addWidget(self.pnSlider, 0, 0); controlSlidersLayout.addWidget(self.peSlider, 0, 1); controlSlidersLayout.addWidget(self.pdSlider, 0, 2)
         controlSlidersLayout.addWidget(self.rollSlider, 1, 0); controlSlidersLayout.addWidget(self.pitchSlider, 1, 1); controlSlidersLayout.addWidget(self.yawSlider, 1, 2)
+
+        for i in range(3):
+            controlSlidersLayout.setColumnStretch(i, 1)
+        for i in range(2):
+            controlSlidersLayout.setRowStretch(i, 1)
 
         controlSlidersWidget.setLayout(controlSlidersLayout)
 
@@ -74,17 +83,17 @@ class IngenuityWindow(QtWidgets.QMainWindow):
         ### --- add widgets to the main layout --- ###
         leftLayout.addWidget(self.vehicleWidget)
         leftLayout.addWidget(controlSlidersWidget)
+        leftLayout.addWidget(self.vehicleWidget, stretch=3)
+        leftLayout.addWidget(controlSlidersWidget, stretch=1)
 
         rightWidget.addTab(statesWidget, "States")
         
+        layout.addWidget(leftWidget, stretch=2)
+        layout.addWidget(rightWidget, stretch=3)
 
-        layout.addWidget(leftWidget)
-        layout.addWidget(rightWidget)
+        self.vehicleWidget.setMinimumSize(200, 200)
 
-        self.vehicleWidget.setMinimumSize(600, 600)
-
-        self.resize(self.sizeHint())
-        self.adjustSize()
+        self.resize(1200, 800)
 
     def updateSim(self, newValue) -> None:
         self.time += 1
