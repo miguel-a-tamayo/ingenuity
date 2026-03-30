@@ -83,10 +83,10 @@ class VehicleDynamics:
         :param forces: sum of forces acting on the vehicle [N] in the body frame
         """
 
-        self.state = integrateRk4(self.calculateDerivative, self.state, 0.0, self.dt, forces)
+        self.state = integrateRk4(self.calculateDerivative, self.state.asVector(), 0.0, self.dt, forces)
 
 
-    def calculateDerivative(self, t: float, stateVector: np.array, force: Force) -> np.array:
+    def calculateDerivative(self, state: VehicleState, force: Force) -> np.array:
         """
         calcualteDerivative(stateVector: np.array, force: Force)
 
@@ -99,19 +99,21 @@ class VehicleDynamics:
         :return stateDot: vehicle state derivative
         """
 
-        # inertial velocity (pdot)
-        body2Inertial = stateVector[6:10]
-        inertial2Body = quatConjugate(body2Inertial)
-        pdotInertial = quatMult(quatMult(body2Inertial, stateVector[3:6]), inertial2Body)
+        stateVector = state.asVector()
 
-        # acceleration (vdot)
+        # pn, pe, pd derivative (inertial velocity needed for position integration)
+        body2Inertial = stateVector[6:10] # quaternion from body to inertial
+        inertial2Body = quatConjugate(body2Inertial)
+        pdotBody = np.array([0, *stateVector[3:6]])
+        pdotInertial = quatMult(quatMult(body2Inertial, pdotBody), inertial2Body)
+
+        # u, v, w derivative (acceleration)
         vdotBody = (1.0 / mass) * force.vector()
 
         # quaternion (qdot)
         # NOTE: because we don't have rotational dynamics at the moment, the quaternion doesn't
         # need to be integrated
-        qDot = np.array([0, 0, 0, 0])
+        qDot = np.array([0., 0., 0., 0.])
+        newDerivative = np.array([*pdotInertial[1::], *vdotBody, *qDot])
 
-        newDerivative = np.array([*pdotInertial, *vdotBody, *qDot])
-
-        return np.array([*pdotInertial, *vdotBody, *qDot])
+        return newDerivative

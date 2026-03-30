@@ -66,7 +66,9 @@ class VehicleState:
         Returns the vector representation of this state
         """
 
-        return np.array([self.pn, self.pe, self.pd, self.u, self.v, self.w])
+        return np.array([self.pn, self.pe, self.pd,
+                         self.u, self.v, self.w,
+                         self.qs, self.qx, self.qy, self.qz])
     
     def fromVector(self, stateVector: np.array) -> None:
         """

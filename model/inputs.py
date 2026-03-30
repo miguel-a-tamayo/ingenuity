@@ -36,7 +36,7 @@ class Force:
         """
         Returns the vector representation of this force
 
-        :return force: numpy array with the force elements
+        :return force: numpy array with x, y, z force elements
         """
 
         return np.array([self.x, self.y, self.z])
